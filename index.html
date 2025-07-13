@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Formula Racing Universe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --f1-red: #e10600;
+            --f2-blue: #0090d0;
+            --f3-green: #00a14b;
+            --f4-purple: #6e0d9b;
+            --fe-electric: #00ccff;
+            --future-tech: #8a2be2;
+            --dark-bg: #0a0a0a;
+            --darker-bg: #050505;
+            --text-light: #f8f8f8;
+            --text-dim: #cccccc;
+            --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        @font-face { 
+            font-family: 'Formula1';
+            src: url('https://www.formula1.com/etc/designs/fom-website/fonts/F1Regular/Formula1-Regular.woff2') format('woff2');
+        }
+        
+        @font-face {
+            font-family: 'Formula1-Bold';
+            src: url('https://www.formula1.com/etc/designs/fom-website/fonts/F1Bold/Formula1-Bold.woff2') format('woff2');
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Formula1', 'Roboto', sans-serif;
+            color: var(--text-light);
+            background-color: var(--dark-bg);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Formula1-Bold', 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Header with animated gradient border */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--darker-bg);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 3px solid transparent;
+            background-clip: padding-box;
+            animation: borderGradient 8s linear infinite;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes borderGradient {
+            0% { border-image: linear-gradient(90deg, var(--f1-red), var(--f2-blue)) 1; }
+            25% { border-image: linear-gradient(90deg, var(--f2-blue), var(--f3-green)) 1; }
+            50% { border-image: linear-gradient(90deg, var(--f3-green), var(--fe-electric)) 1; }
+            75% { border-image: linear-gradient(90deg, var(--fe-electric), var(--f4-purple)) 1; }
+            100% { border-image: linear-gradient(90deg, var(--f4-purple), var(--f1-red)) 1; }
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--f1-red), var(--fe-electric));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .live-scores {
+            display: flex;
+            flex-direction: column;
+            background: rgba(10,10,10,0.9);
+            border-radius: 10px;
+            padding: 0.8rem;
+            width: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .series-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--f1-red);
+            font-weight: bold;
+        }
+
+        .standings {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .standings.active {
+            display: flex;
+        }
+
+        .driver-card {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(var(--team-color), 0.1);
+            border-left: 3px solid rgb(var(--team-color));
+            border-radius: 4px;
+        }
+
+        .driver-card .position {
+            font-weight: bold;
+            width: 20px;
+        }
+
+        .driver-card .name {
+            flex-grow: 1;
+            font-family: 'Formula1-Bold';
+        }
+
+        .driver-card .points {
+            font-weight: bold;
+        }
+
+        .last-updated {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .car-viewer {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .car-viewer {
+                height: 250px;
+            }
+
+            .car-controls {
+                flex-wrap: wrap;
+                bottom: 10px;
+                left: 10px;
+            }
+
+            .control-btn {
+                padding: 6px 10px;
+                font-size: 0.9rem;
+            }
+
+            .tech-specs {
+                right: 10px;
+                top: 10px;
+                max-width: 180px;
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .car-model {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform 0.5s ease;
+        }
+
+        .car-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .tech-specs {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 250px;
+        }
+
+        .spec-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .spec-item:hover {
+            color: var(--fe-electric);
+        }
+
+        .ar-button {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            background: var(--fe-electric);
+            color: black;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1001;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes scrollTicker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 1.1rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: var(--transition);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: currentColor;
+            transition: var(--transition);
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-f1:hover { color: var(--f1-red); }
+        .nav-f2:hover { color: var(--f2-blue); }
+        .nav-f3:hover { color: var(--f3-green); }
+        .nav-f4:hover { color: var(--f4-purple); }
+        .nav-fe:hover { color: var(--fe-electric); }
+        .nav-future:hover { color: var(--future-tech); }
+        
+        /* Hero section with parallax effect */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat;
+            z-index: -2;
+            filter: brightness(0.4);
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 300%;
+            height: 200px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="20" viewBox="0 0 200 20"><path d="M0,10 Q50,20 100,10 T200,10" fill="none" stroke="white" stroke-width="2"/></svg>') repeat-x;
+            background-size: 200px 20px;
+            animation: trackMove 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes trackMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-66.66%); }
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .hero h1 {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background: linear-gradient(90deg, #fff, #eee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-dim);
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+            40% { transform: translateY(-20px) translateX(-50%); }
+            60% { transform: translateY(-10px) translateX(-50%); }
+        }
+        
+        /* Car showcase - scroll-driven animations */
+        .car-showcase {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 1400px;
+            height: 400px;
+            z-index: -1;
+            perspective: 2000px;
+        }
+        
+        .car {
+            position: absolute;
+            width: 600px;
+            height: 300px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0;
+            transform: translateY(100px) rotateX(20deg);
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            transition: var(--transition);
+            will-change: transform, opacity;
+        }
+        
+        .car.active {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+        }
+        
+        .f1-car {
+            background-image: url('https://www.formula1.com/content/dam/fom-website/2018-redesign-assets/2%20redesign%20assets/2%20car%20images%202018/2%20car%20images%202018%20transparent%20backgrounds/Mercedes%20W14%20transparent%20background.png.transform/6col/image.png');
+            left: 10%;
+            top: 40%;
+        }
+        
+        .f2-car {
+            background-image: url('https://www.fiaformula2.com/Content/Images/News/2023/01/2023-F2-Car-Render.png');
+            left: 30%;
+            top: 45%;
+        }
+        
+        .f3-car {
+            background-image: url('https://www.fiaformula3.com/Content/Images/News/2022/12/2023-F3-Car-Render.png');
+            left: 50%;
+            top: 50%;
+        }
+        
+        .f4-car {
+            background-image: url('https://www.formula4.com.au/wp-content/uploads/2022/03/F4-car-2022-transparent.png');
+            left: 70%;
+            top: 55%;
+        }
+        
+        .fe-car {
+            background-image: url('https://www.fiaformulae.com/Content/Images/News/2022/04/22/GEN3-TRANSPARENT.png');
+            left: 90%;
+            top: 60%;
+        }
+        
+        /* Content sections */
+        .main-content {
+            position: relative;
+            z-index: 1;
+            background-color: var(--dark-bg);
+            box-shadow: 0 -20px 50px rgba(0,0,0,0.8);
+        }
+        
+        .section {
+            min-height: 100vh;
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%);
+            z-index: -1;
+        }
+        
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .f1-section { background: url('https://images.unsplash.com/photo-1581089781785-603411fa81e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
+        .f2-section { background: url('https://images.unsplash.com/photo-1622819584099-e04ccb14e8a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2089&q=80') center/cover no-repeat; }
+        .f3-section { background: url('https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
+        .f4-section { background: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
+        .fe-section { background: url('https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
+        
+        .section-title {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.8s ease;
+        }
+        
+        .section.in-view .section-title::after {
+            transform: scaleX(1);
+        }
+        
+        .f1-section .section-title { color: var(--f1-red); }
+        .f2-section .section-title { color: var(--f2-blue); }
+        .f3-section .section-title { color: var(--f3-green); }
+        .f4-section .section-title { color: var(--f4-purple); }
+        .fe-section .section-title { color: var(--fe-electric); }
+        
+        .section-content {
+            max-width: 800px;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 3rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: translateY(50px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .section.in-view .section-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .section p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        /* Stats grid with animated bars */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .section.in-view .stat-card {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .stat-card:nth-child(1) { border-color: var(--f1-red); transition-delay: 0.1s; }
+        .stat-card:nth-child(2) { border-color: var(--f2-blue); transition-delay: 0.2s; }
+        .stat-card:nth-child(3) { border-color: var(--f3-green); transition-delay: 0.3s; }
+        .stat-card:nth-child(4) { border-color: var(--f4-purple); transition-delay: 0.4s; }
+        
+        .stat-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, #fff, #ddd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            border-radius: 3px;
+            transition: width 1.5s ease-out;
+        }
+        
+        .section.in-view .progress-fill {
+            width: var(--progress-width);
+        }
+        
+        /* Comparison table */
+        .comparison {
+            width: 100%;
+            margin: 3rem 0;
+            border-collapse: collapse;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .section.in-view .comparison {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .comparison th, .comparison td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .comparison th {
+            background: rgba(255,255,255,0.05);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        
+        .comparison tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .comparison tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        /* Gallery with scroll-driven animations */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            transform: scale(0.95);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .section.in-view .gallery-item {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+        
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+        
+        /* Timeline with scroll effects */
+        .timeline-section {
+            padding: 8rem 2rem;
+            background: var(--darker-bg);
+        }
+        
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            background: linear-gradient(90deg, var(--f1-red), var(--fe-electric));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background: linear-gradient(to bottom, var(--f1-red), var(--fe-electric));
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition);
+        }
+        
+        .timeline-item.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+            background: var(--dark-bg);
+            border: 4px solid;
+        }
+        
+        .left {
+            left: 0;
+        }
+        
+        .right {
+            left: 50%;
+        }
+        
+        .left::after {
+            right: -16px;
+            border-color: var(--f1-red);
+        }
+        
+        .right::after {
+            left: -16px;
+            border-color: var(--fe-electric);
+        }
+        
+        .timeline-content {
+            padding: 20px 30px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            backdrop-filter: blur(5px);
+            position: relative;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+        
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: inherit;
+            top: 10px;
+            transform: rotate(45deg);
+            z-index: -1;
+        }
+        
+        .left .timeline-content::before {
+            right: -10px;
+        }
+        
+        .right .timeline-content::before {
+            left: -10px;
+        }
+        
+        .timeline-year {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--f1-red);
+        }
+        
+        .right .timeline-year {
+            color: var(--fe-electric);
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--darker-bg);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: left;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-column a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column a:hover {
+            color: white;
+        }
+
+        /* Future Tech Section */
+        .future-section {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%) !important;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tech-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .tech-card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--fe-electric);
+            transform: translateY(-5px);
+        }
+
+        .tech-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--fe-electric);
+        }
+
+        .tech-card h3 {
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .tech-card p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .tech-demo {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            height: 400px;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-placeholder {
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .demo-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .tech-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .tech-demo {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .tech-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .floating-podium {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .floating-podium {
+                flex-direction: column-reverse;
+                align-items: center;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .podium-step {
+                width: 80px;
+                padding: 8px;
+            }
+
+            .driver {
+                font-size: 1.2rem;
+            }
+        }
+
+        body:hover .floating-podium {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .podium-step {
+            background: rgba(0,0,0,0.7);
+            border-radius: 8px 8px 0 0;
+            padding: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            border-top: 3px solid;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .first {
+            height: 100px;
+            border-color: gold;
+            animation-delay: 0s;
+        }
+
+        .second {
+            height: 70px;
+            border-color: silver;
+            animation-delay: 0.2s;
+        }
+
+        .third {
+            height: 50px;
+            border-color: #cd7f32;
+            animation-delay: 0.4s;
+        }
+
+        .driver {
+            font-family: 'Formula1-Bold';
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .team {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            
+            .section-title {
+                font-size: 3rem;
+            }
+            
+            .car {
+                width: 500px;
+                height: 250px;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .timeline-item::after {
+                left: 18px;
+            }
+            
+            .left::after, .right::after {
+                left: 18px;
+            }
+            
+            .right {
+                left: 0;
+            }
+            
+            .left .timeline-content::before, .right .timeline-content::before {
+                left: -10px;
+                right: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0.5rem;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .live-scores {
+                width: 100%;
+                max-width: 100%;
+                margin: 0.5rem 0;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero-content {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 4rem 1rem;
+                min-height: auto;
+            }
+            
+            .section-content {
+                padding: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .car {
+                width: 400px;
+                height: 200px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .car {
+                width: 300px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">FORMULA UNIVERSE</div>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+                <span class="menu-line"></span>
+            </button>
+            <div class="live-scores">
+                <div class="series-tabs">
+                    <button class="tab-btn active" data-series="f1">F1</button>
+                    <button class="tab-btn" data-series="f2">F2</button>
+                    <button class="tab-btn" data-series="fe">FE</button>
+                </div>
+                <div class="standings-container">
+                    <div class="standings active" id="f1-standings">
+                        <div class="driver-card" style="--team-color: #0600ef;">
+                            <span class="position">1</span>
+                            <span class="name">VER</span>
+                            <span class="points">256</span>
+                        </div>
+                        <div class="driver-card" style="--team-color: #00d2be;">
+                            <span class="position">2</span>
+                            <span class="name">PER</span>
+                            <span class="points">156</span>
+                        </div>
+                        <div class="driver-card" style="--team-color: #ff9800;">
+                            <span class="position">3</span>
+                            <span class="name">ALO</span>
+                            <span class="points">137</span>
+                        </div>
+                    </div>
+                    <div class="standings" id="f2-standings">
+                        <!-- F2 standings would go here -->
+                    </div>
+                    <div class="standings" id="fe-standings">
+                        <!-- FE standings would go here -->
+                    </div>
+                </div>
+                <div class="last-updated">Updated: <span class="timestamp">Just now</span></div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#f1" class="nav-f1">F1</a></li>
+                    <li><a href="#f2" class="nav-f2">F2</a></li>
+                    <li><a href="#f3" class="nav-f3">F3</a></li>
+                    <li><a href="#f4" class="nav-f4">F4</a></li>
+                    <li><a href="#fe" class="nav-fe">Formula E</a></li>
+                    <li><a href="#future" class="nav-future">Future Tech</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <h1>The Evolution of Formula Racing</h1>
+            <p>From the roaring engines of F1 to the whisper-quiet power of Formula E, explore the hierarchy of motorsport excellence</p>
+        </div>
+        <div class="scroll-down">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+    
+    <div class="car-showcase">
+        <div class="car-viewer">
+            <div class="car-model" id="f1-model" data-car="f1"></div>
+            <div class="car-controls">
+                <button class="control-btn rotate-x">Rotate X</button>
+                <button class="control-btn rotate-y">Rotate Y</button>
+                <button class="control-btn zoom-in">Zoom +</button>
+                <button class="control-btn zoom-out">Zoom -</button>
+                <button class="control-btn compare">Compare</button>
+            </div>
+            <div class="tech-specs">
+                <h3>Technical Specifications</h3>
+                <div class="spec-item" data-highlight="engine">
+                    <span>Engine:</span> 1.6L V6 Turbo Hybrid
+                </div>
+                <div class="spec-item" data-highlight="aero">
+                    <span>Power:</span> ~1000 HP
+                </div>
+                <div class="spec-item" data-highlight="chassis">
+                    <span>Weight:</span> 798 kg
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <main class="main-content">
+        <!-- Formula 1 Section -->
+        <section id="f1" class="section f1-section">
+            <div class="section-container">
+                <h2 class="section-title">Formula 1</h2>
+                <div class="section-content">
+                    <p>Formula 1 represents the pinnacle of motorsport, combining cutting-edge technology with the world's most skilled drivers. With races spanning five continents, F1 is a global phenomenon that attracts hundreds of millions of viewers each season.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">1000+</div>
+                            <div class="stat-label">Horsepower</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f1-red);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">370</div>
+                            <div class="stat-label">km/h Top Speed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f1-red);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">2.6s</div>
+                            <div class="stat-label">0-100 km/h</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f1-red);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">23</div>
+                            <div class="stat-label">Races in 2023</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f1-red);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Technical Specifications</h3>
+                    <table class="comparison">
+                        <tr>
+                            <th>Engine</th>
+                            <td>1.6L V6 Turbo Hybrid</td>
+                        </tr>
+                        <tr>
+                            <th>Power Output</th>
+                            <td>~1000 hp (combined)</td>
+                        </tr>
+                        <tr>
+                            <th>Weight</th>
+                            <td>798 kg (minimum including driver)</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel Capacity</th>
+                            <td>110 kg maximum</td>
+                        </tr>
+                        <tr>
+                            <th>Gears</th>
+                            <td>8-speed + reverse</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>2023 Season Highlights</h3>
+                    <div class="gallery">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1581089781785-603411fa81e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F1 Car">
+                            <div class="gallery-caption">Red Bull Racing dominates 2023 season</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1585060544812-6b45742d762f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1931&q=80" alt="F1 Race">
+                            <div class="gallery-caption">Miami Grand Prix street circuit</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1585054331335-24529bc13742?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F1 Podium">
+                            <div class="gallery-caption">Podium celebrations in Monaco</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Formula 2 Section -->
+        <section id="f2" class="section f2-section">
+            <div class="section-container">
+                <h2 class="section-title">Formula 2</h2>
+                <div class="section-content">
+                    <p>Formula 2 is the principal feeder series for Formula 1, featuring similar but less powerful cars to prepare drivers for the top tier. All teams use identical chassis and engines, placing emphasis on driver skill.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">620</div>
+                            <div class="stat-label">Horsepower</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 62%; background: var(--f2-blue);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">335</div>
+                            <div class="stat-label">km/h Top Speed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 90%; background: var(--f2-blue);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">2.9s</div>
+                            <div class="stat-label">0-100 km/h</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 89%; background: var(--f2-blue);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">14</div>
+                            <div class="stat-label">Races in 2023</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 60%; background: var(--f2-blue);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Technical Specifications</h3>
+                    <table class="comparison">
+                        <tr>
+                            <th>Engine</th>
+                            <td>3.4L V6 Turbo (Mecachrome)</td>
+                        </tr>
+                        <tr>
+                            <th>Power Output</th>
+                            <td>620 hp @ 8750 rpm</td>
+                        </tr>
+                        <tr>
+                            <th>Weight</th>
+                            <td>755 kg (including driver)</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel Capacity</th>
+                            <td>125 liters</td>
+                        </tr>
+                        <tr>
+                            <th>Gears</th>
+                            <td>6-speed sequential</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Notable F2 Graduates</h3>
+                    <div class="gallery">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1622819584099-e04ccb14e8a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2089&q=80" alt="F2 Car">
+                            <div class="gallery-caption">Current F2 car design</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1636489953086-861afea4f3d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Charles Leclerc">
+                            <div class="gallery-caption">Charles Leclerc - 2017 Champion</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1584992236310-6edddc08acff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="George Russell">
+                            <div class="gallery-caption">George Russell - 2018 Champion</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Formula 3 Section -->
+        <section id="f3" class="section f3-section">
+            <div class="section-container">
+                <h2 class="section-title">Formula 3</h2>
+                <div class="section-content">
+                    <p>Formula 3 serves as a crucial development category for young drivers, offering competitive racing with less powerful but more affordable cars than F2. The series runs as a support package for F1 races.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">380</div>
+                            <div class="stat-label">Horsepower</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 38%; background: var(--f3-green);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">300</div>
+                            <div class="stat-label">km/h Top Speed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 81%; background: var(--f3-green);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">3.1s</div>
+                            <div class="stat-label">0-100 km/h</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 85%; background: var(--f3-green);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">18</div>
+                            <div class="stat-label">Races in 2023</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 78%; background: var(--f3-green);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Technical Specifications</h3>
+                    <table class="comparison">
+                        <tr>
+                            <th>Engine</th>
+                            <td>3.4L V6 Naturally Aspirated</td>
+                        </tr>
+                        <tr>
+                            <th>Power Output</th>
+                            <td>380 hp @ 8000 rpm</td>
+                        </tr>
+                        <tr>
+                            <th>Weight</th>
+                            <td>675 kg (including driver)</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel Capacity</th>
+                            <td>120 liters</td>
+                        </tr>
+                        <tr>
+                            <th>Gears</th>
+                            <td>6-speed sequential</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>F3 Championship Structure</h3>
+                    <div class="gallery">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Cars">
+                            <div class="gallery-caption">F3 grid at race start</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1601758003453-6a2a64774d6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Podium">
+                            <div class="gallery-caption">Young talents on the podium</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1601758003487-0cdaa04a3595?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Action">
+                            <div class="gallery-caption">Close wheel-to-wheel racing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Formula 4 Section -->
+        <section id="f4" class="section f4-section">
+            <div class="section-container">
+                <h2 class="section-title">Formula 4</h2>
+                <div class="section-content">
+                    <p>Formula 4 is the entry-level category of formula racing, with regional championships worldwide providing the first step in professional racing. It's designed to be affordable while maintaining high safety standards.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">160</div>
+                            <div class="stat-label">Horsepower</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 16%; background: var(--f4-purple);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">240</div>
+                            <div class="stat-label">km/h Top Speed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 65%; background: var(--f4-purple);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">4.3s</div>
+                            <div class="stat-label">0-100 km/h</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 66%; background: var(--f4-purple);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">30+</div>
+                            <div class="stat-label">National Series</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f4-purple);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>Technical Specifications</h3>
+                    <table class="comparison">
+                        <tr>
+                            <th>Engine</th>
+                            <td>1.4L Turbo (varies by series)</td>
+                        </tr>
+                        <tr>
+                            <th>Power Output</th>
+                            <td>160 hp (controlled)</td>
+                        </tr>
+                        <tr>
+                            <th>Weight</th>
+                            <td>565 kg (including driver)</td>
+                        </tr>
+                        <tr>
+                            <th>Fuel Capacity</th>
+                            <td>40 liters</td>
+                        </tr>
+                        <tr>
+                            <th>Gears</th>
+                            <td>6-speed sequential paddle shift</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Global F4 Championships</h3>
+                    <div class="gallery">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Car">
+                            <div class="gallery-caption">Italian F4 championship car</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1495567720989-cebdbdd97913?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Young Drivers">
+                            <div class="gallery-caption">Young drivers in British F4</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Action">
+                            <div class="gallery-caption">Close racing in Japanese F4</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Formula E Section -->
+        <section id="fe" class="section fe-section">
+            <div class="section-container">
+                <h2 class="section-title">Formula E</h2>
+                <div class="section-content">
+                    <p>Formula E is the world's first fully-electric international single-seater championship, showcasing the future of motorsport technology with races held on street circuits in major cities worldwide.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">350kW</div>
+                            <div class="stat-label">Power Output</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 35%; background: var(--fe-electric);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">280</div>
+                            <div class="stat-label">km/h Top Speed</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 76%; background: var(--fe-electric);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">2.8s</div>
+                            <div class="stat-label">0-100 km/h</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 86%; background: var(--fe-electric);"></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">16</div>
+                            <div class="stat-label">Races in 2023</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="--progress-width: 70%; background: var(--fe-electric);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3>GEN3 Car Specifications</h3>
+                    <table class="comparison">
+                        <tr>
+                            <th>Power</th>
+                            <td>350kW (470hp) qualifying mode</td>
+                        </tr>
+                        <tr>
+                            <th>Battery</th>
+                            <td>52kWh, 800V architecture</td>
+                        </tr>
+                        <tr>
+                            <th>Weight</th>
+                            <td>840 kg (including driver)</td>
+                        </tr>
+                        <tr>
+                            <th>Regen</th>
+                            <td>40% of energy from regeneration</td>
+                        </tr>
+                        <tr>
+                            <th>0-200 km/h</th>
+                            <td>5.6 seconds</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>Formula E Highlights</h3>
+                    <div class="gallery">
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Car">
+                            <div class="gallery-caption">GEN3 car - fastest FE car yet</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1633613286991-611fe299c4be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Race">
+                            <div class="gallery-caption">New York City E-Prix</div>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="https://images.unsplash.com/photo-1633613286851-0f65b5f1b761?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Podium">
+                            <div class="gallery-caption">London E-Prix podium</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Timeline Section -->
+        <section class="timeline-section">
+            <div class="timeline-container">
+                <h2 class="timeline-title">Formula Racing Evolution</h2>
+                
+                <div class="timeline">
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1946</div>
+                            <p>Formula 1 regulations first established by the FIA, setting the foundation for modern single-seater racing.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1950</div>
+                            <p>First official Formula 1 World Championship season begins, with Giuseppe Farina winning the inaugural title.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1967</div>
+                            <p>Introduction of Formula 2 as a feeder series to develop young talent for Formula 1.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">1971</div>
+                            <p>Formula 3 gains international recognition as a crucial step in the racing ladder between karting and F2.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2001</div>
+                            <p>Introduction of standardized chassis in F2 to reduce costs and emphasize driver skill over engineering budgets.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2014</div>
+                            <p>First Formula E season begins, marking a new era of sustainable motorsport in city centers worldwide.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item left">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2015</div>
+                            <p>Formula 4 launched as a global initiative to create affordable, standardized entry-level formula racing.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item right">
+                        <div class="timeline-content">
+                            <div class="timeline-year">2023</div>
+                            <p>Introduction of F1's new engine regulations focusing on sustainable fuels and increased electrification.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Future Tech Section -->
+        <section id="future" class="section future-section">
+            <div class="section-container">
+                <h2 class="section-title">Future Tech</h2>
+                <div class="section-content">
+                    <p>Experience the cutting-edge technologies that will revolutionize motorsport in the coming decade.</p>
+                    
+                    <div class="tech-grid">
+                        <div class="tech-card" data-tech="neural-driver">
+                            <div class="tech-icon"><i class="fas fa-brain"></i></div>
+                            <h3>Be The Driver</h3>
+                            <p>Brainwave-controlled racing using focus levels and eye-tracking</p>
+                        </div>
+                        <div class="tech-card" data-tech="holographic-theater">
+                            <div class="tech-icon"><i class="fas fa-vr-cardboard"></i></div>
+                            <h3>Holographic Theater</h3>
+                            <p>3D light-field projections of iconic race moments</p>
+                        </div>
+                        <div class="tech-card" data-tech="ai-realities">
+                            <div class="tech-icon"><i class="fas fa-random"></i></div>
+                            <h3>Alternate Realities</h3>
+                            <p>AI resimulates entire GPs with different conditions</p>
+                        </div>
+                        <div class="tech-card" data-tech="bloodsport">
+                            <div class="tech-icon"><i class="fas fa-skull"></i></div>
+                            <h3>Bloodsport Mode</h3>
+                            <p>Trigger controversial incidents and vote on penalties</p>
+                        </div>
+                        <div class="tech-card" data-tech="cosmic-gp">
+                            <div class="tech-icon"><i class="fas fa-rocket"></i></div>
+                            <h3>Cosmic Grand Prix</h3>
+                            <p>Zero-gravity racing on fictional planets</p>
+                        </div>
+                        <div class="tech-card" data-tech="data-experiences">
+                            <div class="tech-icon"><i class="fas fa-wave-square"></i></div>
+                            <h3>Data Experiences</h3>
+                            <p>Synesthetic telemetry converting data into art</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tech-demo" id="tech-demo">
+                        <div class="demo-placeholder">
+                            <i class="fas fa-hand-pointer"></i>
+                            <p>Select a technology to see interactive demo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Formula Series</h3>
+                <ul>
+                    <li><a href="#f1">Formula 1</a></li>
+                    <li><a href="#f2">Formula 2</a></li>
+                    <li><a href="#f3">Formula 3</a></li>
+                    <li><a href="#f4">Formula 4</a></li>
+                    <li><a href="#fe">Formula E</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul>
+                    <li><a href="#">History of Motorsport</a></li>
+                    <li><a href="#">Driver Development</a></li>
+                    <li><a href="#">Technical Regulations</a></li>
+                    <li><a href="#">Upcoming Events</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Connect</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+                <p style="margin-top: 1.5rem; color: var(--text-dim);">
+                    Subscribe to our newsletter for the latest updates in formula racing.
+                </p>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2023 Formula Racing Universe. All rights reserved. This is a demonstration website only.
+        </div>
+    </footer>
+
+    <div class="floating-podium">
+        <button class="ar-button">
+            <i class="fas fa-mobile-alt"></i> View in AR
+        </button>
+        <div class="podium-step first">
+            <div class="driver">VER</div>
+            <div class="team">Red Bull</div>
+        </div>
+        <div class="podium-step second">
+            <div class="driver">HAM</div>
+            <div class="team">Mercedes</div>
+        </div>
+        <div class="podium-step third">
+            <div class="driver">ALO</div>
+            <div class="team">Aston Martin</div>
+        </div>
+    </div>
+    
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const nav = document.querySelector('nav');
+        
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a nav link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                nav.classList.remove('active');
+            });
+        });
+
+        // Tab switching for standings
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.standings').forEach(s => s.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(`${btn.dataset.series}-standings`).classList.add('active');
+                updateTimestamp();
+            });
+        });
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.querySelector('.timestamp').textContent = 
+                `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        // 3D car controls
+        const carModel = document.querySelector('.car-model');
+        let rotationX = 0;
+        let rotationY = 0;
+        let zoom = 0.0;
+
+        document.querySelector('.rotate-x').addEventListener('click', () => {
+            rotationX += 15;
+            carModel.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${zoom})`;
+        });
+
+        document.querySelector('.rotate-y').addEventListener('click', () => {
+            rotationY += 15;
+            carModel.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${zoom})`;
+        });
+
+        document.querySelector('.zoom-in').addEventListener('click', () => {
+            zoom += 0.1;
+            carModel.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${zoom})`;
+        });
+
+        document.querySelector('.zoom-out').addEventListener('click', () => {
+            zoom = Math.max(0.3, zoom - 0.1);
+            carModel.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg) scale(${zoom})`;
+        });
+
+        // Highlight tech specs on hover
+        document.querySelectorAll('.spec-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const highlight = item.dataset.highlight;
+                carModel.classList.add(`highlight-${highlight}`);
+            });
+            item.addEventListener('mouseleave', () => {
+                const highlight = item.dataset.highlight;
+                carModel.classList.remove(`highlight-${highlight}`);
+            });
+        });
+
+        // AR button
+        document.querySelector('.ar-button').addEventListener('click', () => {
+            if (navigator.xr) {
+                // Initialize WebXR session
+                alert('AR experience would launch here on supported devices');
+            } else {
+                alert('AR not supported on this device');
+            }
+        });
+
+        // Confetti effect
+        function createConfetti() {
+            const colors = ['#e10600', '#0090d0', '#00a14b', '#6e0d9b', '#00ccff', '#ffffff'];
+            const confettiContainer = document.createElement('div');
+            confettiContainer.style.position = 'fixed';
+            confettiContainer.style.top = '0';
+            confettiContainer.style.left = '0';
+            confettiContainer.style.width = '100%';
+            confettiContainer.style.height = '100%';
+            confettiContainer.style.pointerEvents = 'none';
+            confettiContainer.style.zIndex = '1000';
+            document.body.appendChild(confettiContainer);
+
+            for (let i = 0; i < 150; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.borderRadius = '50%';
+                confetti.style.opacity = Math.random() * 0.8 + 0.2;
+                
+                const animation = confetti.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 1 },
+                    { transform: `translate(${Math.random() * 200 - 100}px, 100vh) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                });
+                
+                confettiContainer.appendChild(confetti);
+                animation.onfinish = () => confetti.remove();
+            }
+
+            setTimeout(() => {
+                confettiContainer.remove();
+            }, 5000);
+        }
+
+        // Trigger confetti when clicking on winner names
+        document.querySelectorAll('.driver').forEach(el => {
+            el.addEventListener('click', createConfetti);
+        });
+
+        // Intersection Observer for scroll animations
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        document.querySelectorAll('.section, .timeline-item').forEach(el => {
+            sectionObserver.observe(el);
+        });
+        
+        // Car showcase animation based on scroll position
+        const cars = document.querySelectorAll('.car');
+        const sections = document.querySelectorAll('.section');
+        
+        function updateCarVisibility() {
+            const scrollPosition = window.scrollY + window.innerHeight / 2;
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const sectionTop = rect.top + window.scrollY;
+                const sectionHeight = rect.height;
+                
+                if (scrollPosition >= sectionTop && scrollPosition <= sectionTop + sectionHeight) {
+                    // Hide all cars
+                    cars.forEach(car => car.classList.remove('active'));
+                    
+                    // Show current section's car
+                    const currentCar = document.querySelector(`.${section.id}-car`);
+                    if (currentCar) {
+                        currentCar.classList.add('active');
+                    }
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', updateCarVisibility);
+        window.addEventListener('resize', updateCarVisibility);
+        
+        // Initialize first car as visible
+        document.querySelector('.f1-car').classList.add('active');
+
+        // Future Tech Interactions
+        const techCards = document.querySelectorAll('.tech-card');
+        const techDemo = document.getElementById('tech-demo');
+        
+        techCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Remove active class from all cards
+                techCards.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked card
+                card.classList.add('active');
+                
+                // Update demo area
+                const tech = card.dataset.tech;
+                showTechDemo(tech);
+            });
+        });
+
+        function showTechDemo(tech) {
+            let demoHTML = '';
+            
+            switch(tech) {
+                case 'neural-driver':
+                    demoHTML = `
+                        <div class="neural-demo">
+                            <div class="driver-header">
+                                <h3>Be The Driver</h3>
+                                <div class="connection-status">Connecting to neural interface...</div>
+                            </div>
+                            <div class="focus-meter">
+                                <div class="focus-bar" style="width: 0%"></div>
+                                <div class="focus-label">Focus Level: <span>0%</span></div>
+                            </div>
+                            <div class="track-view">
+                                <div class="steering-indicator"></div>
+                                <div class="speed-display">0 km/h</div>
+                            </div>
+                            <div class="modes">
+                                <button class="mode-btn active">Focus Control</button>
+                                <button class="mode-btn">Fear Factor VR</button>
+                                <button class="mode-btn">Driver's Mindset</button>
+                            </div>
+                            <div class="calibration-note">Calibrate by focusing on the moving target</div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'holographic-theater':
+                    demoHTML = `
+                        <div class="holo-theater">
+                            <h3>Holographic Race Replay</h3>
+                            <div class="holo-stage">
+                                <div class="ghost-car" data-driver="senna"></div>
+                                <div class="ghost-car" data-driver="prost"></div>
+                            </div>
+                            <div class="race-selector">
+                                <div class="race-option active" data-race="monaco91">
+                                    <span>Senna vs Prost '91 Monaco</span>
+                                </div>
+                                <div class="race-option" data-race="silverstone08">
+                                    <span>Hamilton vs Massa '08 Silverstone</span>
+                                </div>
+                                <div class="race-option" data-race="bahrain21">
+                                    <span>Verstappen vs Hamilton '21 Bahrain</span>
+                                </div>
+                            </div>
+                            <div class="ar-challenge">
+                                <button class="ar-btn">AR Pit Crew Challenge</button>
+                                <div class="best-time">Best Time: --:--.--</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'ai-realities':
+                    demoHTML = `
+                        <div class="ai-realities-demo">
+                            <h3>Alternate Realities Generator</h3>
+                            <div class="reality-controls">
+                                <div class="control-group">
+                                    <label>Change Driver:</label>
+                                    <select class="driver-select">
+                                        <option value="hamilton">Hamilton</option>
+                                        <option value="verstappen">Verstappen</option>
+                                        <option value="senna">Senna</option>
+                                    </select>
+                                </div>
+                                <div class="control-group">
+                                    <label>Change Weather:</label>
+                                    <select class="weather-select">
+                                        <option value="dry">Dry</option>
+                                        <option value="wet">Wet</option>
+                                        <option value="snow">Snow</option>
+                                    </select>
+                                </div>
+                                <button class="simulate-btn">Resimulate GP</button>
+                            </div>
+                            <div class="multiverse-section">
+                                <h4>Multiverse Championship</h4>
+                                <div class="rule-options">
+                                    <label><input type="checkbox"> No Wings</label>
+                                    <label><input type="checkbox"> Rocket Boosters</label>
+                                    <label><input type="checkbox"> Mirror Mode</label>
+                                </div>
+                                <div class="deepfake-preview">
+                                    <div class="deepfake-placeholder">
+                                        <i class="fas fa-user-astronaut"></i>
+                                        <p>Upload your face for podium interviews</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                // Additional cases for other technologies...
+            
+            techDemo.innerHTML = demoHTML;
+            
+            // Animate probability bars
+            if (tech === 'ai-predictor') {
+                setTimeout(() => {
+                    document.querySelectorAll('.probability-bar').forEach(bar => {
+                        bar.style.width = bar.parentElement.style.getPropertyValue('--win-prob');
+                    });
+                }, 100);
+            }
+        }
+        
+        // Smooth scroll for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Scroll down button
+        document.querySelector('.scroll-down').addEventListener('click', () => {
+            window.scrollTo({
+                top: document.querySelector('.main-content').offsetTop - 60,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Animate progress bars when they come into view
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const progressFill = entry.target.querySelector('.progress-fill');
+                    if (progressFill) {
+                        progressFill.style.width = progressFill.style.getPropertyValue('--progress-width');
+                    }
+                }
+            });
+        }, {
+            threshold: 0.5
+        });
+        
+        document.querySelectorAll('.stat-card').forEach(card => {
+            progressObserver.observe(card);
+        });
+    </script>
+</body>
+</html>
