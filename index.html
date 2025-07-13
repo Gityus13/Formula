@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.0, maximum-scale=0.0, user-scalable=no, minimum-scale=0.0">
     <title>Formula Racing Universe</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
     <style>
         :root {
             --f1-red: #e10600;
@@ -22,12 +24,12 @@
         
         @font-face { 
             font-family: 'Formula1';
-            src: url('https://www.formula1.com/etc/designs/fom-website/fonts/F1Regular/Formula1-Regular.woff2') format('woff2');
+            src: url('https://ibb.co/wFDc6tNQ') format('woff2');
         }
         
         @font-face {
             font-family: 'Formula1-Bold';
-            src: url('https://www.formula1.com/etc/designs/fom-website/fonts/F1Bold/Formula1-Bold.woff2') format('woff2');
+            src: url('https://ibb.co/wFDc6tNQ') format('woff2');
         }
         
         * {
@@ -72,8 +74,8 @@
             0% { border-image: linear-gradient(90deg, var(--f1-red), var(--f2-blue)) 1; }
             25% { border-image: linear-gradient(90deg, var(--f2-blue), var(--f3-green)) 1; }
             50% { border-image: linear-gradient(90deg, var(--f3-green), var(--fe-electric)) 1; }
-            75% { border-image: linear-gradient(90deg, var(--fe-electric), var(--f4-purple)) 1; }
-            100% { border-image: linear-gradient(90deg, var(--f4-purple), var(--f1-red)) 1; }
+            75% { border-image: linear-gradient(90deg, var(--fe-electric), var(--f1-red)) 1; }
+            100% { border-image: linear-gradient(90deg, var(--f1-red), var(--f2-blue)) 1; }
         }
         
         .header-container {
@@ -441,12 +443,6 @@
             top: 50%;
         }
         
-        .f4-car {
-            background-image: url('https://www.formula4.com.au/wp-content/uploads/2022/03/F4-car-2022-transparent.png');
-            left: 70%;
-            top: 55%;
-        }
-        
         .fe-car {
             background-image: url('https://www.fiaformulae.com/Content/Images/News/2022/04/22/GEN3-TRANSPARENT.png');
             left: 90%;
@@ -491,7 +487,6 @@
         .f1-section { background: url('https://images.unsplash.com/photo-1581089781785-603411fa81e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
         .f2-section { background: url('https://images.unsplash.com/photo-1622819584099-e04ccb14e8a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2089&q=80') center/cover no-repeat; }
         .f3-section { background: url('https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
-        .f4-section { background: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
         .fe-section { background: url('https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') center/cover no-repeat; }
         
         .section-title {
@@ -665,13 +660,24 @@
             border-radius: 8px;
             overflow: hidden;
             aspect-ratio: 16/9;
-            transform: scale(0.95);
+            transform: translateY(50px) scale(0.95);
             opacity: 0;
-            transition: var(--transition);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity;
         }
         
-        .section.in-view .gallery-item {
-            transform: scale(1);
+        .gallery-item:nth-child(1) {
+            transition-delay: 0.1s;
+        }
+        .gallery-item:nth-child(2) {
+            transition-delay: 0.2s;
+        }
+        .gallery-item:nth-child(3) {
+            transition-delay: 0.3s;
+        }
+        
+        .gallery-item.in-view {
+            transform: translateY(0) scale(1);
             opacity: 1;
         }
         
@@ -680,6 +686,11 @@
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
+            transform: scale(1.1);
+        }
+        
+        .gallery-item.in-view img {
+            transform: scale(1);
         }
         
         .gallery-item:hover img {
@@ -1187,12 +1198,7 @@
                 <span class="menu-line"></span>
             </button>
             <div class="live-scores">
-                <div class="series-tabs">
-                    <button class="tab-btn active" data-series="f1">F1</button>
-                    <button class="tab-btn" data-series="f2">F2</button>
-                    <button class="tab-btn" data-series="fe">FE</button>
-                </div>
-                <div class="standings-container">
+                 <div class="standings-container">
                     <div class="standings active" id="f1-standings">
                         <div class="driver-card" style="--team-color: #0600ef;">
                             <span class="position">1</span>
@@ -1224,9 +1230,7 @@
                     <li><a href="#f1" class="nav-f1">F1</a></li>
                     <li><a href="#f2" class="nav-f2">F2</a></li>
                     <li><a href="#f3" class="nav-f3">F3</a></li>
-                    <li><a href="#f4" class="nav-f4">F4</a></li>
                     <li><a href="#fe" class="nav-fe">Formula E</a></li>
-                    <li><a href="#future" class="nav-future">Future Tech</a></li>
                 </ul>
             </nav>
         </div>
@@ -1234,24 +1238,14 @@
     
     <section class="hero">
         <div class="hero-content">
-            <h1>The Evolution of Formula Racing</h1>
-            <p>From the roaring engines of F1 to the whisper-quiet power of Formula E, explore the hierarchy of motorsport excellence</p>
+            <h1 class="hero-title">Formula Racing</h1>
+            <p class="hero-subtitle">From the roaring engines of F1 to the whisper-quiet power of Formula E, explore the hierarchy of motorsport excellence</p>
         </div>
         <div class="scroll-down">
             <i class="fas fa-chevron-down"></i>
         </div>
     </section>
     
-    <div class="car-showcase">
-        <div class="car-viewer">
-            <div class="car-model" id="f1-model" data-car="f1"></div>
-            <div class="car-controls">
-                <button class="control-btn rotate-x">Rotate X</button>
-                <button class="control-btn rotate-y">Rotate Y</button>
-                <button class="control-btn zoom-in">Zoom +</button>
-                <button class="control-btn zoom-out">Zoom -</button>
-                <button class="control-btn compare">Compare</button>
-            </div>
             <div class="tech-specs">
                 <h3>Technical Specifications</h3>
                 <div class="spec-item" data-highlight="engine">
@@ -1271,12 +1265,14 @@
         <!-- Formula 1 Section -->
         <section id="f1" class="section f1-section">
             <div class="section-container">
-                <h2 class="section-title">Formula 1</h2>
+                <h2 class="section-title">
+                    <span class="title-text">Formula 1</span>
+                </h2>
                 <div class="section-content">
                     <p>Formula 1 represents the pinnacle of motorsport, combining cutting-edge technology with the world's most skilled drivers. With races spanning five continents, F1 is a global phenomenon that attracts hundreds of millions of viewers each season.</p>
                     
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card" data-gsap="stat-card">
                             <div class="stat-value">1000+</div>
                             <div class="stat-label">Horsepower</div>
                             <div class="progress-bar">
@@ -1332,16 +1328,16 @@
                     
                     <h3>2023 Season Highlights</h3>
                     <div class="gallery">
-                        <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1581089781785-603411fa81e5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F1 Car">
+                        <div class="gallery-item" data-gsap="gallery-item">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/SaudiArabianGP/Sunday/1440772815.jpg" alt="F1 Car">
                             <div class="gallery-caption">Red Bull Racing dominates 2023 season</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1585060544812-6b45742d762f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1931&q=80" alt="F1 Race">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/BahrainGP/Sunday/1440772815.jpg" alt="F1 Race">
                             <div class="gallery-caption">Miami Grand Prix street circuit</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1585054331335-24529bc13742?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F1 Podium">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/MonacoGP/Sunday/1440772815.jpg" alt="F1 Podium">
                             <div class="gallery-caption">Podium celebrations in Monaco</div>
                         </div>
                     </div>
@@ -1414,15 +1410,15 @@
                     <h3>Notable F2 Graduates</h3>
                     <div class="gallery">
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1622819584099-e04ccb14e8a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2089&q=80" alt="F2 Car">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/BahrainGP/Saturday/1440772815.jpg" alt="F2 Car">
                             <div class="gallery-caption">Current F2 car design</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1636489953086-861afea4f3d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Charles Leclerc">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/MonacoGP/Saturday/1440772815.jpg" alt="Charles Leclerc">
                             <div class="gallery-caption">Charles Leclerc - 2017 Champion</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1584992236310-6edddc08acff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="George Russell">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/BahrainGP/Friday/1440772815.jpg" alt="George Russell">
                             <div class="gallery-caption">George Russell - 2018 Champion</div>
                         </div>
                     </div>
@@ -1495,97 +1491,16 @@
                     <h3>F3 Championship Structure</h3>
                     <div class="gallery">
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1601758003122-53c40e686a19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Cars">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/BahrainGP/Thursday/1440772815.jpg" alt="F3 Cars">
                             <div class="gallery-caption">F3 grid at race start</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1601758003453-6a2a64774d6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Podium">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/MonacoGP/Friday/1440772815.jpg" alt="F3 Podium">
                             <div class="gallery-caption">Young talents on the podium</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1601758003487-0cdaa04a3595?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F3 Action">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/SaudiArabianGP/Saturday/1440772815.jpg" alt="F3 Action">
                             <div class="gallery-caption">Close wheel-to-wheel racing</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Formula 4 Section -->
-        <section id="f4" class="section f4-section">
-            <div class="section-container">
-                <h2 class="section-title">Formula 4</h2>
-                <div class="section-content">
-                    <p>Formula 4 is the entry-level category of formula racing, with regional championships worldwide providing the first step in professional racing. It's designed to be affordable while maintaining high safety standards.</p>
-                    
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value">160</div>
-                            <div class="stat-label">Horsepower</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="--progress-width: 16%; background: var(--f4-purple);"></div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">240</div>
-                            <div class="stat-label">km/h Top Speed</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="--progress-width: 65%; background: var(--f4-purple);"></div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">4.3s</div>
-                            <div class="stat-label">0-100 km/h</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="--progress-width: 66%; background: var(--f4-purple);"></div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">30+</div>
-                            <div class="stat-label">National Series</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="--progress-width: 100%; background: var(--f4-purple);"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3>Technical Specifications</h3>
-                    <table class="comparison">
-                        <tr>
-                            <th>Engine</th>
-                            <td>1.4L Turbo (varies by series)</td>
-                        </tr>
-                        <tr>
-                            <th>Power Output</th>
-                            <td>160 hp (controlled)</td>
-                        </tr>
-                        <tr>
-                            <th>Weight</th>
-                            <td>565 kg (including driver)</td>
-                        </tr>
-                        <tr>
-                            <th>Fuel Capacity</th>
-                            <td>40 liters</td>
-                        </tr>
-                        <tr>
-                            <th>Gears</th>
-                            <td>6-speed sequential paddle shift</td>
-                        </tr>
-                    </table>
-                    
-                    <h3>Global F4 Championships</h3>
-                    <div class="gallery">
-                        <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Car">
-                            <div class="gallery-caption">Italian F4 championship car</div>
-                        </div>
-                        <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1495567720989-cebdbdd97913?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Young Drivers">
-                            <div class="gallery-caption">Young drivers in British F4</div>
-                        </div>
-                        <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="F4 Action">
-                            <div class="gallery-caption">Close racing in Japanese F4</div>
                         </div>
                     </div>
                 </div>
@@ -1657,15 +1572,15 @@
                     <h3>Formula E Highlights</h3>
                     <div class="gallery">
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Car">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/MexicoCityGP/Sunday/1440772815.jpg" alt="FE Car">
                             <div class="gallery-caption">GEN3 car - fastest FE car yet</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1633613286991-611fe299c4be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Race">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/LasVegasGP/Saturday/1440772815.jpg" alt="FE Race">
                             <div class="gallery-caption">New York City E-Prix</div>
                         </div>
                         <div class="gallery-item">
-                            <img src="https://images.unsplash.com/photo-1633613286851-0f65b5f1b761?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="FE Podium">
+                            <img src="https://media.formula1.com/image/upload/content/dam/fom-website/manual/Misc/2023manual/2023Races/AbuDhabiGP/Sunday/1440772815.jpg" alt="FE Podium">
                             <div class="gallery-caption">London E-Prix podium</div>
                         </div>
                     </div>
@@ -1789,7 +1704,6 @@
                     <li><a href="#f1">Formula 1</a></li>
                     <li><a href="#f2">Formula 2</a></li>
                     <li><a href="#f3">Formula 3</a></li>
-                    <li><a href="#f4">Formula 4</a></li>
                     <li><a href="#fe">Formula E</a></li>
                 </ul>
             </div>
@@ -1969,7 +1883,7 @@
             el.addEventListener('click', createConfetti);
         });
 
-        // Intersection Observer for scroll animations
+        // Intersection Observers for scroll animations
         const sectionObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1980,8 +1894,23 @@
             threshold: 0.1
         });
         
+        const galleryObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        });
+        
         document.querySelectorAll('.section, .timeline-item').forEach(el => {
             sectionObserver.observe(el);
+        });
+        
+        document.querySelectorAll('.gallery-item').forEach(el => {
+            galleryObserver.observe(el);
         });
         
         // Car showcase animation based on scroll position
@@ -2014,6 +1943,120 @@
         
         // Initialize first car as visible
         document.querySelector('.f1-car').classList.add('active');
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero animations
+        gsap.from('.hero-title', {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.hero-subtitle', {
+            duration: 1.5,
+            y: 50,
+            opacity: 0,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
+
+        gsap.from('.scroll-down', {
+            duration: 1,
+            y: -20,
+            opacity: 0,
+            delay: 1,
+            ease: 'elastic.out(1, 0.5)'
+        });
+
+        // Section title animations
+        gsap.utils.toArray('.section-title .title-text').forEach(title => {
+            gsap.from(title, {
+                scrollTrigger: {
+                    trigger: title,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                },
+                duration: 1,
+                x: -50,
+                opacity: 0,
+                ease: 'back.out(1.7)'
+            });
+        });
+
+        // Stats grid animations
+        gsap.utils.toArray('[data-gsap="stat-card"]').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                },
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                delay: i * 0.1,
+                ease: 'power2.out'
+            });
+        });
+
+        // Gallery animations
+        gsap.utils.toArray('[data-gsap="gallery-item"]').forEach((item, i) => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                },
+                duration: 0.8,
+                y: 100,
+                opacity: 0,
+                delay: i * 0.1,
+                ease: 'back.out(1.7)'
+            });
+        });
+
+        // Timeline animations
+        gsap.utils.toArray('.timeline-item').forEach(item => {
+            gsap.from(item, {
+                scrollTrigger: {
+                    trigger: item,
+                    start: 'top 80%',
+                    toggleActions: 'play none none none'
+                },
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                ease: 'power2.out'
+            });
+        });
+
+        // Floating podium animation
+        gsap.to('.floating-podium', {
+            scrollTrigger: {
+                trigger: '.main-content',
+                start: 'top center',
+                end: 'bottom bottom',
+                scrub: true
+            },
+            y: -100,
+            ease: 'none'
+        });
+
+        // Header border animation
+        const header = document.querySelector('header');
+        gsap.to(header, {
+            scrollTrigger: {
+                trigger: '.main-content',
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: true
+            },
+            borderBottomWidth: '6px',
+            ease: 'none'
+        });
 
         // Future Tech Interactions
         const techCards = document.querySelectorAll('.tech-card');
